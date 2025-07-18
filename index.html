@@ -24,6 +24,8 @@
             --button-hover: #2563eb;
             --button-disabled: #9ca3af;
             --status-bg: #f9fafb;
+            --link-color: #3b82f6;
+            --link-hover: #2563eb;
         }
 
         .dark-mode {
@@ -45,6 +47,8 @@
             --button-hover: #4752c4;
             --button-disabled: #4f545c;
             --status-bg: #2f3136;
+            --link-color: #5865f2;
+            --link-hover: #4752c4;
         }
 
         body {
@@ -101,13 +105,14 @@
         }
         
         .semester {
-            min-width: 280px;
+            width: 280px;
             background-color: var(--card-bg);
             border-radius: 8px;
             box-shadow: var(--card-shadow);
             padding: 15px;
             position: relative;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            flex-shrink: 0;
         }
         
         .semester::after {
@@ -144,19 +149,21 @@
         }
         
         .subject {
-            padding: 12px;
-            margin-bottom: 12px;
+            padding: 10px;
+            margin-bottom: 10px;
             border-radius: 6px;
             position: relative;
             transition: all 0.3s ease;
             border-left: 4px solid #3498db;
+            font-size: 0.9em;
         }
         
         /* Colores predefinidos para materias */
         .subject.MATH { border-left-color: #e74c3c; }
-        .subject.CS { border-left-color: #3498db; }
+        .subject.HPCS { border-left-color: #3498db; }
         .subject.PHYS { border-left-color: #9b59b6; }
-        .subject.LIT { border-left-color: #1abc9c; }
+        .subject.DSRL { border-left-color: #88b659; }
+        .subject.LITR { border-left-color: #1abc9c; }
         .subject.STAT { border-left-color: #f39c12; }
         .subject.ELEC { border-left-color: #d35400; }
         
@@ -197,18 +204,17 @@
             display: block;
             margin-bottom: 3px;
             padding-left: 15px;
+            word-wrap: break-word;
+            white-space: normal;
+            line-height: 1.3;
         }
         
         .subject-code {
-            font-size: 0.85em;
-            color: inherit;
-            opacity: 0.8;
-            display: block;
-            padding-left: 15px;
+            display: none; /* Ocultar el código de la materia */
         }
         
         .subject-credits {
-            font-size: 0.8em;
+            font-size: 0.75em;
             display: block;
             margin-top: 5px;
             padding-left: 15px;
@@ -221,6 +227,21 @@
             margin-top: 5px;
             padding-left: 15px;
             transition: color 0.3s ease;
+        }
+        
+        .subject-link {
+            font-size: 0.75em;
+            color: var(--link-color);
+            display: block;
+            margin-top: 5px;
+            padding-left: 15px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .subject-link:hover {
+            color: var(--link-hover);
+            text-decoration: underline;
         }
         
         .status-info {
@@ -331,8 +352,8 @@
             <div class="progress" id="progressBar"></div>
         </div>
         <div class="progress-details">
-            <span id="passedCredits">0 créditos</span>
-            <span id="totalCredits">0 créditos totales</span>
+            <span id="passedCredits">0 unidades de crédito aprobadas</span>
+            <span id="totalCredits">0 unidades de crédito totales</span>
         </div>
     </div>
     
@@ -390,61 +411,29 @@
                     {
                         number: 1,
                         subjects: [
-                            { code: 'MATH101', name: 'Cálculo I', credits: 4, prerequisites: [] },
-                            { code: 'CS101', name: 'Introducción a la Programación', credits: 4, prerequisites: [] },
-                            { code: 'PHYS101', name: 'Física I', credits: 3, prerequisites: [] },
-                            { code: 'LIT101', name: 'Escritura Académica', credits: 3, prerequisites: [] }
+                            { code: 'LITR101', name: 'Lenguaje y Comunicación', credits: 4, prerequisites: [], link: 'https://drive.google.com/file/d/1aAnio8ZrxmYjm7IXN89Nd0ubxbAG7R7M/view'},
+                            { code: 'MATH101', name: 'Cálculo I', credits: 4, prerequisites: [], link: 'https://drive.google.com/file/d/11SZRBNDq6DRQGgOqygdljv8TKHFULjSO/view'},
+                            { code: 'DSRL101', name: 'Desarrollo Personal y Profesional', credits: 2, prerequisites: [], link: 'https://drive.google.com/file/d/1DogWjuKMa9hlB__Cp3DN0MXf5R2ydjFN/view'},
+                            { code: 'PHYS102', name: 'Entrenamiento Físico General', credits: 2, prerequisites: [], link: 'https://drive.google.com/file/d/11e8O1ilBNr3r31Ssj5BlbQgsUVtlnmVP/view'},
+                            { code: 'DSRL102', name: 'Lógica', credits: 4, prerequisites: [], link: 'https://drive.google.com/file/d/10S8t9nnDMDmWinEavN8JULLTGhPrKRqR/view'},
                         ]
                     },
                     {
                         number: 2,
                         subjects: [
-                            { code: 'MATH102', name: 'Cálculo II', credits: 4, prerequisites: ['MATH101'] },
-                            { code: 'CS102', name: 'Programación Orientada a Objetos', credits: 4, prerequisites: ['CS101'] },
-                            { code: 'PHYS102', name: 'Física II', credits: 3, prerequisites: ['PHYS101'] },
-                            { code: 'STAT101', name: 'Probabilidad y Estadística', credits: 3, prerequisites: [] }
+                            { code: 'MATH203', name: 'Cálculo II', credits: 4, prerequisites: ['MATH101'], link: 'https://drive.google.com/file/d/1iJTfFAEOKP9dCiLVDtG59f3eBPJVGqvw/view'},
+                            { code: 'HPCS201', name: 'Introducción a la Informática', credits: 4, prerequisites: ['DSRL102'], link: 'https://drive.google.com/file/d/1PshDS8I8u_fIaEaeJYmYWFL6dreoR40P/view'},
+                            { code: 'DSRL203', name: 'Espacio Geográfico e Identidad Nacional', credits: 2, prerequisites: [], link: 'https://drive.google.com/file/d/1G6bdsGPC1TxaQVN2AEuzFiDKKA1IQLa9/view'},
+                            { code: 'STAT204', name: 'Estadística Descriptiva', credits: 3, prerequisites: ['MATH101'], link: 'https://drive.google.com/file/d/1FFS92cxmr8ky2wBGcMEBWAcZzfuUHZ3-/view'},
+                            { code: 'LITR202', name: 'Inglés Instrumental', credits: 2, prerequisites: [], link: 'https://drive.google.com/file/d/1GxaEY8A5dkcBG1GxUB97G6LZcjDmbdQh/view'},
+                            { code: 'DSRL204', name: 'Ecología y Educación Ambiental', credits: 3, prerequisites: [], link: 'https://drive.google.com/file/d/1OcdExq-KcOqZxvxNEXFhPqq7Gb18q_PE/view'},
                         ]
                     },
-                    {
-                        number: 3,
-                        subjects: [
-                            { code: 'CS201', name: 'Estructuras de Datos', credits: 4, prerequisites: ['CS102'] },
-                            { code: 'CS202', name: 'Algoritmos', credits: 4, prerequisites: ['CS102', 'MATH102'] },
-                            { code: 'MATH201', name: 'Matemáticas Discretas', credits: 3, prerequisites: ['MATH101'] },
-                            { code: 'ELEC201', name: 'Sistemas Digitales', credits: 3, prerequisites: [] }
-                        ]
-                    },
-                    {
-                        number: 4,
-                        subjects: [
-                            { code: 'CS301', name: 'Bases de Datos', credits: 4, prerequisites: ['CS201'] },
-                            { code: 'CS302', name: 'Sistemas Operativos', credits: 4, prerequisites: ['CS201', 'ELEC201'] },
-                            { code: 'CS303', name: 'Redes de Computadoras', credits: 3, prerequisites: ['CS201'] },
-                            { code: 'MATH301', name: 'Álgebra Lineal', credits: 3, prerequisites: ['MATH102'] }
-                        ]
-                    },
-                    {
-                        number: 5,
-                        subjects: [
-                            { code: 'CS401', name: 'Ingeniería de Software', credits: 4, prerequisites: ['CS301', 'CS302'] },
-                            { code: 'CS402', name: 'Inteligencia Artificial', credits: 4, prerequisites: ['CS202', 'MATH201'] },
-                            { code: 'CS403', name: 'Seguridad Informática', credits: 3, prerequisites: ['CS302', 'CS303'] },
-                            { code: 'CS404', name: 'Interacción Humano-Computadora', credits: 3, prerequisites: ['CS301'] }
-                        ]
-                    },
-                    {
-                        number: 6,
-                        subjects: [
-                            { code: 'CS501', name: 'Aprendizaje Automático', credits: 4, prerequisites: ['CS402', 'MATH301'] },
-                            { code: 'CS502', name: 'Sistemas Distribuidos', credits: 4, prerequisites: ['CS302', 'CS303'] },
-                            { code: 'CS503', name: 'Computación en la Nube', credits: 3, prerequisites: ['CS302', 'CS303'] },
-                            { code: 'CS504', name: 'Proyecto Final', credits: 6, prerequisites: ['CS401'] }
-                        ]
-                    }
                 ],
                 totalCredits: 0, // Se calculará
                 passedSubjects: [], // Para rastrear materias aprobadas
-                subjectNumbers: {} // Mapeo de códigos de materias a números
+                subjectNumbers: {}, // Mapeo de códigos de materias a números
+                subjectNames: {} // Mapeo de códigos a nombres de materias
             };
             
             // Calcular créditos totales y asignar números a las materias
@@ -452,6 +441,7 @@
             curriculum.totalCredits = curriculum.semesters.reduce((total, semester) => {
                 return total + semester.subjects.reduce((semTotal, subject) => {
                     curriculum.subjectNumbers[subject.code] = subjectCounter++;
+                    curriculum.subjectNames[subject.code] = subject.name;
                     return semTotal + subject.credits;
                 }, 0);
             }, 0);
@@ -489,7 +479,7 @@
                 
                 header.innerHTML = `
                     Semestre ${semesterData.number}
-                    <div class="semester-credits">${semesterCredits} créditos</div>
+                    <div class="semester-credits">${semesterCredits} unidades de crédito</div>
                 `;
                 
                 semester.appendChild(header);
@@ -506,31 +496,45 @@
                 subject.dataset.credits = subjectData.credits;
                 subject.dataset.prerequisites = subjectData.prerequisites.join(',');
                 
-                // Obtener números de requisitos previos
-                const prereqNumbers = subjectData.prerequisites.map(code => curriculum.subjectNumbers[code]);
+                // Obtener nombres de requisitos previos
+                const prereqNames = subjectData.prerequisites.map(code => curriculum.subjectNames[code]);
                 
+                // Crear el contenido de la materia
                 subject.innerHTML = `
                     <span class="subject-number">${curriculum.subjectNumbers[subjectData.code]}</span>
                     <span class="subject-name">${subjectData.name}</span>
-                    <span class="subject-code">${subjectData.code}</span>
-                    <span class="subject-credits">${subjectData.credits} créditos</span>
-                    ${prereqNumbers.length > 0 ? 
-                      `<span class="subject-prerequisites">Requisitos: ${prereqNumbers.join(', ')}</span>` : 
+                    <span class="subject-credits">${subjectData.credits} unidades de crédito</span>
+                    ${prereqNames.length > 0 ? 
+                      `<span class="subject-prerequisites">Requisitos: ${prereqNames.join(', ')}</span>` : 
+                      ''}
+                    ${subjectData.link ? 
+                      `<a href="${subjectData.link}" target="_blank" class="subject-link">Ver contenido de la materia</a>` : 
                       ''}
                 `;
                 
                 semester.appendChild(subject);
                 
-                // Manejador de clic para materias
-                subject.addEventListener('click', function() {
-                    if (this.classList.contains('available')) {
-                        // Marcar como aprobada
-                        this.classList.remove('available');
-                        this.classList.add('passed');
-                        
-                        // Agregar a materias aprobadas si no está ya
-                        if (!curriculum.passedSubjects.includes(subjectData.code)) {
-                            curriculum.passedSubjects.push(subjectData.code);
+                // Manejador de clic para materias (solo en el área no enlazada)
+                subject.addEventListener('click', function(e) {
+                    // Evitar que el clic en el enlace active el cambio de estado
+                    if (e.target.tagName === 'A') {
+                        return;
+                    }
+                    
+                    const subjectCode = subjectData.code;
+                    const isPassed = curriculum.passedSubjects.includes(subjectCode);
+                    
+                    if (this.classList.contains('available') || isPassed) {
+                        if (isPassed) {
+                            // Desmarcar como aprobada
+                            this.classList.remove('passed');
+                            this.classList.add('available');
+                            curriculum.passedSubjects = curriculum.passedSubjects.filter(code => code !== subjectCode);
+                        } else {
+                            // Marcar como aprobada
+                            this.classList.remove('available');
+                            this.classList.add('passed');
+                            curriculum.passedSubjects.push(subjectCode);
                         }
                         
                         // Actualizar estados de todas las materias
@@ -545,27 +549,34 @@
             
             // Actualizar estados de materias (disponible, bloqueada) basado en materias aprobadas
             function updateSubjectStates() {
-                const allSubjects = document.querySelectorAll('.subject:not(.passed)');
+                const allSubjects = document.querySelectorAll('.subject');
                 
                 allSubjects.forEach(subject => {
+                    const subjectCode = subject.dataset.code;
+                    const isPassed = curriculum.passedSubjects.includes(subjectCode);
                     const prerequisites = subject.dataset.prerequisites.split(',').filter(code => code !== '');
                     
-                    if (prerequisites.length === 0) {
-                        // Sin requisitos - siempre disponible
-                        subject.classList.remove('locked');
-                        subject.classList.add('available');
+                    if (isPassed) {
+                        subject.classList.remove('available', 'locked');
+                        subject.classList.add('passed');
                     } else {
-                        // Verificar si se cumplen todos los requisitos
-                        const allPrerequisitesMet = prerequisites.every(code => 
-                            curriculum.passedSubjects.includes(code)
-                        );
-                        
-                        if (allPrerequisitesMet) {
+                        if (prerequisites.length === 0) {
+                            // Sin requisitos - siempre disponible
                             subject.classList.remove('locked');
                             subject.classList.add('available');
                         } else {
-                            subject.classList.remove('available');
-                            subject.classList.add('locked');
+                            // Verificar si se cumplen todos los requisitos
+                            const allPrerequisitesMet = prerequisites.every(code => 
+                                curriculum.passedSubjects.includes(code)
+                            );
+                            
+                            if (allPrerequisitesMet) {
+                                subject.classList.remove('locked');
+                                subject.classList.add('available');
+                            } else {
+                                subject.classList.remove('available');
+                                subject.classList.add('locked');
+                            }
                         }
                     }
                 });
@@ -585,8 +596,8 @@
                 
                 progressText.textContent = `${percentage}% completado (${passedCount}/${totalCount} materias aprobadas)`;
                 progressBar.style.width = `${percentage}%`;
-                passedCreditsEl.textContent = `${passedCredits} créditos aprobados`;
-                totalCreditsEl.textContent = `${curriculum.totalCredits} créditos totales`;
+                passedCreditsEl.textContent = `${passedCredits} unidades de crédito aprobadas`;
+                totalCreditsEl.textContent = `${curriculum.totalCredits} unidades de crédito totales`;
             }
             
             // Guardar progreso en localStorage
