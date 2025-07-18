@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Estudio - Ingeniería en Informática (UNELLEZ)</title>
+    <style>
+        :root {
+            /* Tema Claro */
+            --bg-color: #f5f7fa;
+            --text-color: #2c3e50;
+            --card-bg: white;
+            --card-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            --border-color: #d1d5db;
+            --header-border: #e5e7eb;
+            --secondary-text: #6b7280;
+            --passed-bg: #f3f4f6;
+            --passed-border: #10b981;
+            --available-bg: white;
+            --locked-bg: #f9fafb;
+            --progress-bg: #e5e7eb;
+            --progress-fill: #10b981;
+            --button-bg: #3b82f6;
+            --button-hover: #2563eb;
+            --button-disabled: #9ca3af;
+            --status-bg: #f9fafb;
+        }
+
+        .dark-mode {
+            /* Tema Oscuro */
+            --bg-color: #18191c;
+            --text-color: #e3e5e8;
+            --card-bg: #2f3136;
+            --card-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            --border-color: #4f545c;
+            --header-border: #40444b;
+            --secondary-text: #b9bbbe;
+            --passed-bg: #36393f;
+            --passed-border: #3ba55d;
+            --available-bg: #2f3136;
+            --locked-bg: #202225;
+            --progress-bg: #40444b;
+            --progress-fill: #3ba55d;
+            --button-bg: #5865f2;
+            --button-hover: #4752c4;
+            --button-disabled: #4f545c;
+            --status-bg: #2f3136;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 30px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 8px 15px;
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-1px);
+        }
+        
+        button:disabled {
+            background-color: var(--button-disabled);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .mesh-container {
+            display: flex;
+            overflow-x: auto;
+            padding: 20px 0;
+            gap: 20px;
+            min-height: 400px;
+        }
+        
+        .semester {
+            min-width: 280px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            padding: 15px;
+            position: relative;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .semester::after {
+            content: '';
+            position: absolute;
+            top: 50px;
+            right: -10px;
+            height: calc(100% - 100px);
+            width: 1px;
+            background-color: var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+        
+        .semester:last-child::after {
+            display: none;
+        }
+        
+        .semester-header {
+            font-weight: bold;
+            text-align: center;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--header-border);
+            color: var(--text-color);
+            font-size: 18px;
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .semester-credits {
+            font-size: 0.8em;
+            color: var(--secondary-text);
+            margin-top: 5px;
+            transition: color 0.3s ease;
+        }
+        
+        .subject {
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            position: relative;
+            transition: all 0.3s ease;
+            border-left: 4px solid #3498db;
+        }
+        
+        /* Colores predefinidos para materias */
+        .subject.MATH { border-left-color: #e74c3c; }
+        .subject.CS { border-left-color: #3498db; }
+        .subject.PHYS { border-left-color: #9b59b6; }
+        .subject.LIT { border-left-color: #1abc9c; }
+        .subject.STAT { border-left-color: #f39c12; }
+        .subject.ELEC { border-left-color: #d35400; }
+        
+        .subject.passed {
+            background-color: var(--passed-bg);
+            color: var(--secondary-text);
+            border-left-color: var(--passed-border);
+        }
+        
+        .subject.passed .subject-name {
+            text-decoration: line-through;
+        }
+        
+        .subject.available {
+            background-color: var(--available-bg);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        
+        .subject.locked {
+            background-color: var(--locked-bg);
+            color: var(--secondary-text);
+            cursor: not-allowed;
+        }
+        
+        .subject-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 0.7em;
+            font-weight: bold;
+            color: var(--secondary-text);
+            transition: color 0.3s ease;
+        }
+        
+        .subject-name {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 3px;
+            padding-left: 15px;
+        }
+        
+        .subject-code {
+            font-size: 0.85em;
+            color: inherit;
+            opacity: 0.8;
+            display: block;
+            padding-left: 15px;
+        }
+        
+        .subject-credits {
+            font-size: 0.8em;
+            display: block;
+            margin-top: 5px;
+            padding-left: 15px;
+        }
+        
+        .subject-prerequisites {
+            font-size: 0.75em;
+            color: var(--secondary-text);
+            display: block;
+            margin-top: 5px;
+            padding-left: 15px;
+            transition: color 0.3s ease;
+        }
+        
+        .status-info {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: var(--status-bg);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: var(--progress-bg);
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--progress-fill);
+            width: 0%;
+            transition: width 0.5s ease, background-color 0.3s ease;
+        }
+        
+        .progress-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.85em;
+            color: var(--secondary-text);
+            transition: color 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--button-hover);
+            transform: scale(1.1);
+        }
+
+        .theme-icon {
+            width: 28px;
+            height: 28px;
+            transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .semester {
+                min-width: 240px;
+            }
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                width: 42px;
+                height: 42px;
+            }
+            .theme-icon {
+                width: 24px;
+                height: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón para cambiar entre tema claro/oscuro -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+        <svg class="theme-icon" id="themeIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path id="sunIcon" d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" fill="currentColor"/>
+            <path id="moonIcon" d="M20.9997 12.79C20.8427 14.4922 20.2037 16.1144 19.1582 17.4668C18.1127 18.8192 16.7035 19.8458 15.0957 20.4265C13.4879 21.0073 11.748 21.1181 10.0795 20.7461C8.41102 20.3741 6.8829 19.5345 5.67413 18.3258C4.46536 17.117 3.62584 15.5889 3.25381 13.9204C2.88178 12.2519 2.99262 10.512 3.57336 8.9043C4.15411 7.29651 5.18073 5.88737 6.53311 4.84189C7.8855 3.7964 9.5077 3.15742 11.2099 3.00043C10.2134 4.34827 9.73375 6.00945 9.85843 7.68141C9.98312 9.35338 10.7039 10.9251 11.8894 12.1106C13.0749 13.2961 14.6466 14.0169 16.3186 14.1416C17.9906 14.2663 19.6517 13.7866 20.9997 12.79Z" fill="currentColor" opacity="0"/>
+        </svg>
+    </button>
+    
+    <h1>Plan de Estudio - Ingeniería en Informática (UNELLEZ)</h1>
+    
+    <!-- Controles principales -->
+    <div class="controls">
+        <button id="saveProgressBtn">Guardar Progreso</button>
+        <button id="loadProgressBtn">Cargar Progreso</button>
+        <button id="resetProgressBtn">Reiniciar Progreso</button>
+    </div>
+    
+    <!-- Información de progreso -->
+    <div class="status-info">
+        <div id="progressText">0% completado (0/0 materias aprobadas)</div>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+        <div class="progress-details">
+            <span id="passedCredits">0 créditos</span>
+            <span id="totalCredits">0 créditos totales</span>
+        </div>
+    </div>
+    
+    <!-- Contenedor de la malla curricular -->
+    <div class="mesh-container" id="meshContainer">
+        <!-- Los semestres se agregarán aquí dinámicamente -->
+    </div>
+    
+    <script>
+        // Cuando el documento está completamente cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener referencias a los elementos del DOM
+            const meshContainer = document.getElementById('meshContainer');
+            const saveProgressBtn = document.getElementById('saveProgressBtn');
+            const loadProgressBtn = document.getElementById('loadProgressBtn');
+            const resetProgressBtn = document.getElementById('resetProgressBtn');
+            const progressText = document.getElementById('progressText');
+            const progressBar = document.getElementById('progressBar');
+            const passedCreditsEl = document.getElementById('passedCredits');
+            const totalCreditsEl = document.getElementById('totalCredits');
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const sunIcon = document.getElementById('sunIcon');
+            const moonIcon = document.getElementById('moonIcon');
+            
+            // Verificar preferencia de tema guardada
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            if (currentTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                sunIcon.setAttribute('opacity', '0');
+                moonIcon.setAttribute('opacity', '1');
+            } else {
+                sunIcon.setAttribute('opacity', '1');
+                moonIcon.setAttribute('opacity', '0');
+            }
+            
+            // Funcionalidad del botón de cambio de tema
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                
+                if (isDark) {
+                    sunIcon.setAttribute('opacity', '0');
+                    moonIcon.setAttribute('opacity', '1');
+                } else {
+                    sunIcon.setAttribute('opacity', '1');
+                    moonIcon.setAttribute('opacity', '0');
+                }
+            });
+            
+            // Datos del plan de estudios - modificar para que coincida con tu plan real
+            const curriculum = {
+                semesters: [
+                    {
+                        number: 1,
+                        subjects: [
+                            { code: 'MATH101', name: 'Cálculo I', credits: 4, prerequisites: [] },
+                            { code: 'CS101', name: 'Introducción a la Programación', credits: 4, prerequisites: [] },
+                            { code: 'PHYS101', name: 'Física I', credits: 3, prerequisites: [] },
+                            { code: 'LIT101', name: 'Escritura Académica', credits: 3, prerequisites: [] }
+                        ]
+                    },
+                    {
+                        number: 2,
+                        subjects: [
+                            { code: 'MATH102', name: 'Cálculo II', credits: 4, prerequisites: ['MATH101'] },
+                            { code: 'CS102', name: 'Programación Orientada a Objetos', credits: 4, prerequisites: ['CS101'] },
+                            { code: 'PHYS102', name: 'Física II', credits: 3, prerequisites: ['PHYS101'] },
+                            { code: 'STAT101', name: 'Probabilidad y Estadística', credits: 3, prerequisites: [] }
+                        ]
+                    },
+                    {
+                        number: 3,
+                        subjects: [
+                            { code: 'CS201', name: 'Estructuras de Datos', credits: 4, prerequisites: ['CS102'] },
+                            { code: 'CS202', name: 'Algoritmos', credits: 4, prerequisites: ['CS102', 'MATH102'] },
+                            { code: 'MATH201', name: 'Matemáticas Discretas', credits: 3, prerequisites: ['MATH101'] },
+                            { code: 'ELEC201', name: 'Sistemas Digitales', credits: 3, prerequisites: [] }
+                        ]
+                    },
+                    {
+                        number: 4,
+                        subjects: [
+                            { code: 'CS301', name: 'Bases de Datos', credits: 4, prerequisites: ['CS201'] },
+                            { code: 'CS302', name: 'Sistemas Operativos', credits: 4, prerequisites: ['CS201', 'ELEC201'] },
+                            { code: 'CS303', name: 'Redes de Computadoras', credits: 3, prerequisites: ['CS201'] },
+                            { code: 'MATH301', name: 'Álgebra Lineal', credits: 3, prerequisites: ['MATH102'] }
+                        ]
+                    },
+                    {
+                        number: 5,
+                        subjects: [
+                            { code: 'CS401', name: 'Ingeniería de Software', credits: 4, prerequisites: ['CS301', 'CS302'] },
+                            { code: 'CS402', name: 'Inteligencia Artificial', credits: 4, prerequisites: ['CS202', 'MATH201'] },
+                            { code: 'CS403', name: 'Seguridad Informática', credits: 3, prerequisites: ['CS302', 'CS303'] },
+                            { code: 'CS404', name: 'Interacción Humano-Computadora', credits: 3, prerequisites: ['CS301'] }
+                        ]
+                    },
+                    {
+                        number: 6,
+                        subjects: [
+                            { code: 'CS501', name: 'Aprendizaje Automático', credits: 4, prerequisites: ['CS402', 'MATH301'] },
+                            { code: 'CS502', name: 'Sistemas Distribuidos', credits: 4, prerequisites: ['CS302', 'CS303'] },
+                            { code: 'CS503', name: 'Computación en la Nube', credits: 3, prerequisites: ['CS302', 'CS303'] },
+                            { code: 'CS504', name: 'Proyecto Final', credits: 6, prerequisites: ['CS401'] }
+                        ]
+                    }
+                ],
+                totalCredits: 0, // Se calculará
+                passedSubjects: [], // Para rastrear materias aprobadas
+                subjectNumbers: {} // Mapeo de códigos de materias a números
+            };
+            
+            // Calcular créditos totales y asignar números a las materias
+            let subjectCounter = 1;
+            curriculum.totalCredits = curriculum.semesters.reduce((total, semester) => {
+                return total + semester.subjects.reduce((semTotal, subject) => {
+                    curriculum.subjectNumbers[subject.code] = subjectCounter++;
+                    return semTotal + subject.credits;
+                }, 0);
+            }, 0);
+            
+            // Inicializar la malla curricular
+            function initializeMesh() {
+                meshContainer.innerHTML = '';
+                
+                // Crear semestres y materias
+                curriculum.semesters.forEach(semesterData => {
+                    const semester = createSemester(semesterData);
+                    meshContainer.appendChild(semester);
+                    
+                    semesterData.subjects.forEach(subjectData => {
+                        addSubjectToSemester(semester, subjectData);
+                    });
+                });
+                
+                // Actualizar estados de las materias basado en las aprobadas
+                updateSubjectStates();
+                updateProgress();
+            }
+            
+            // Crear una columna de semestre
+            function createSemester(semesterData) {
+                const semester = document.createElement('div');
+                semester.className = 'semester';
+                semester.dataset.semester = semesterData.number;
+                
+                const header = document.createElement('div');
+                header.className = 'semester-header';
+                
+                // Calcular créditos del semestre
+                const semesterCredits = semesterData.subjects.reduce((total, subject) => total + subject.credits, 0);
+                
+                header.innerHTML = `
+                    Semestre ${semesterData.number}
+                    <div class="semester-credits">${semesterCredits} créditos</div>
+                `;
+                
+                semester.appendChild(header);
+                
+                return semester;
+            }
+            
+            // Agregar una materia a un semestre
+            function addSubjectToSemester(semester, subjectData) {
+                const subject = document.createElement('div');
+                const subjectClass = subjectData.code.substring(0, 4); // Obtener primeros 4 caracteres para la clase de color
+                subject.className = `subject ${subjectClass}`;
+                subject.dataset.code = subjectData.code;
+                subject.dataset.credits = subjectData.credits;
+                subject.dataset.prerequisites = subjectData.prerequisites.join(',');
+                
+                // Obtener números de requisitos previos
+                const prereqNumbers = subjectData.prerequisites.map(code => curriculum.subjectNumbers[code]);
+                
+                subject.innerHTML = `
+                    <span class="subject-number">${curriculum.subjectNumbers[subjectData.code]}</span>
+                    <span class="subject-name">${subjectData.name}</span>
+                    <span class="subject-code">${subjectData.code}</span>
+                    <span class="subject-credits">${subjectData.credits} créditos</span>
+                    ${prereqNumbers.length > 0 ? 
+                      `<span class="subject-prerequisites">Requisitos: ${prereqNumbers.join(', ')}</span>` : 
+                      ''}
+                `;
+                
+                semester.appendChild(subject);
+                
+                // Manejador de clic para materias
+                subject.addEventListener('click', function() {
+                    if (this.classList.contains('available')) {
+                        // Marcar como aprobada
+                        this.classList.remove('available');
+                        this.classList.add('passed');
+                        
+                        // Agregar a materias aprobadas si no está ya
+                        if (!curriculum.passedSubjects.includes(subjectData.code)) {
+                            curriculum.passedSubjects.push(subjectData.code);
+                        }
+                        
+                        // Actualizar estados de todas las materias
+                        updateSubjectStates();
+                        updateProgress();
+                        
+                        // Guardar progreso automáticamente
+                        saveProgress();
+                    }
+                });
+            }
+            
+            // Actualizar estados de materias (disponible, bloqueada) basado en materias aprobadas
+            function updateSubjectStates() {
+                const allSubjects = document.querySelectorAll('.subject:not(.passed)');
+                
+                allSubjects.forEach(subject => {
+                    const prerequisites = subject.dataset.prerequisites.split(',').filter(code => code !== '');
+                    
+                    if (prerequisites.length === 0) {
+                        // Sin requisitos - siempre disponible
+                        subject.classList.remove('locked');
+                        subject.classList.add('available');
+                    } else {
+                        // Verificar si se cumplen todos los requisitos
+                        const allPrerequisitesMet = prerequisites.every(code => 
+                            curriculum.passedSubjects.includes(code)
+                        );
+                        
+                        if (allPrerequisitesMet) {
+                            subject.classList.remove('locked');
+                            subject.classList.add('available');
+                        } else {
+                            subject.classList.remove('available');
+                            subject.classList.add('locked');
+                        }
+                    }
+                });
+            }
+            
+            // Actualizar barra de progreso y texto
+            function updateProgress() {
+                const passedCredits = curriculum.semesters.reduce((total, semester) => {
+                    return total + semester.subjects.reduce((semTotal, subject) => {
+                        return semTotal + (curriculum.passedSubjects.includes(subject.code) ? subject.credits : 0);
+                    }, 0);
+                }, 0);
+                
+                const percentage = Math.round((passedCredits / curriculum.totalCredits) * 100);
+                const passedCount = curriculum.passedSubjects.length;
+                const totalCount = Object.keys(curriculum.subjectNumbers).length;
+                
+                progressText.textContent = `${percentage}% completado (${passedCount}/${totalCount} materias aprobadas)`;
+                progressBar.style.width = `${percentage}%`;
+                passedCreditsEl.textContent = `${passedCredits} créditos aprobados`;
+                totalCreditsEl.textContent = `${curriculum.totalCredits} créditos totales`;
+            }
+            
+            // Guardar progreso en localStorage
+            function saveProgress() {
+                localStorage.setItem('universityProgress', JSON.stringify(curriculum.passedSubjects));
+            }
+            
+            // Cargar progreso desde localStorage
+            function loadProgress() {
+                const savedProgress = localStorage.getItem('universityProgress');
+                if (savedProgress) {
+                    curriculum.passedSubjects = JSON.parse(savedProgress);
+                    
+                    // Marcar materias aprobadas visualmente
+                    document.querySelectorAll('.subject').forEach(subject => {
+                        if (curriculum.passedSubjects.includes(subject.dataset.code)) {
+                            subject.classList.remove('available', 'locked');
+                            subject.classList.add('passed');
+                        }
+                    });
+                    
+                    updateSubjectStates();
+                    updateProgress();
+                } else {
+                    alert('No se encontró progreso guardado.');
+                }
+            }
+            
+            // Reiniciar progreso
+            function resetProgress() {
+                if (confirm('¿Estás seguro de que deseas reiniciar tu progreso? Esta acción no se puede deshacer.')) {
+                    curriculum.passedSubjects = [];
+                    
+                    // Reiniciar visualmente todas las materias
+                    document.querySelectorAll('.subject').forEach(subject => {
+                        subject.classList.remove('passed');
+                    });
+                    
+                    updateSubjectStates();
+                    updateProgress();
+                    localStorage.removeItem('universityProgress');
+                }
+            }
+            
+            // Manejadores de eventos
+            saveProgressBtn.addEventListener('click', saveProgress);
+            loadProgressBtn.addEventListener('click', loadProgress);
+            resetProgressBtn.addEventListener('click', resetProgress);
+            
+            // Inicializar la malla
+            initializeMesh();
+        });
+    </script>
+</body>
+</html>
