@@ -596,8 +596,8 @@
                 
                 progressText.textContent = `${percentage}% completado (${passedCount}/${totalCount} materias aprobadas)`;
                 progressBar.style.width = `${percentage}%`;
-                passedCreditsEl.textContent = `${passedCredits} unidades de crédito aprobadas`;
-                totalCreditsEl.textContent = `${curriculum.totalCredits} unidades de crédito totales`;
+                passedCreditsEl.textContent = `${passedCredits} unidades aprobadas`;
+                totalCreditsEl.textContent = `${curriculum.totalCredits} unidades totales`;
             }
             
             // Guardar progreso en localStorage
